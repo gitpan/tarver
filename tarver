@@ -1,0 +1,155 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+our $VERSION = "1.00";
+
+use Getopt::Std;
+use Archive::Tar;
+
+$|=1;
+my ( %opts );
+getopts( 'hlst', \%opts ) or $opts{h}=1;
+&VERSION_MESSAGE if defined( $opts{h} ) or not( defined( $ARGV[0] ) );
+
+my ( $filename, $filepath, $version ) = @ARGV;
+my $tar = Archive::Tar->new( $filename );
+unless( defined( $tar ) ) {
+	print "[FAIL] Cannot open $tar\n";
+	exit -1;
+}
+
+&process_list if defined( $opts{l} );
+&process_replace if defined( $opts{s} ) or defined( $opts{t} );
+&process_view;
+
+sub process_list {
+	my $total_all = 0;
+	my $total_list = 0;
+	foreach ( $tar->list_files ) {
+		$total_all++;
+		next if defined( $filepath ) and not( /^$filepath/ ) ;
+		$total_list++;
+		print "$_\n" ;
+	}
+	print "\nTotal: $total_list of $total_all\n";
+	exit 0;
+}
+
+sub process_view {
+	&process_list unless defined( $filepath );
+	my $content = $tar->get_content( $filepath );
+	print $content;
+	exit 0;
+}
+
+sub process_replace {
+	&VERSION_MESSAGE unless defined( $filepath ) and defined( $version );
+	my $content = $tar->get_content( $filepath );
+	print $content, "\n";
+	print "  -->\n\n";
+	$content =~ s/\d+\.\w+\.\w+$/$version/m;
+	$tar->replace_content( $filepath, $content );
+	print $content, "\n";
+	if( defined( $opts{s} ) ) {
+		print "Write to $filename with gzip -9\n";
+		$tar->write( $filename, 9 );
+	}
+	exit 0;
+}
+
+sub VERSION_MESSAGE {
+	print <<"USAGE";
+tarver $VERSION under perl $]
+  Utility to change software version number in a .tar.gz file
+
+Usage: tarver [-hl] [TARFILE] [FILEPATH] [VERSION]
+
+  tarver -h
+    Show help
+
+  tarver [TARFILE]
+    List all files in TARFILE
+
+  tarver [TARFILE] [FILEPATH]
+    Show content of FILEPATH in TARFILE
+
+  tarver -l [TARFILE] [FILEPATH]
+    List all files in TARFILE, whose filepath is starting with FILEPATH
+
+  tarver -t [TARFILE] [FILEPATH] [VERSION]
+    Test and show whether replace is ok
+
+  tarver -s [TARFILE] [FILEPATH] [VERSION]
+    Change first line in FILEPATH, 'number.chars.chars[CRLF]' -> VERSION
+
+Examples:
+  tarver data.tgz
+  tarver data.tgz etc/redhat-release
+  tarver data.tgz etc/kids-release
+  tarver -l data.tgz etc/
+  tarver -t data.tgz etc/redhat-release 8.2B4.3348P3
+  tarver -t data.tgz etc/kids-release 8.2B4.3348P3
+  tarver -s data.tgz etc/redhat-release 8.2B4.3348P3
+  tarver -s data.tgz etc/kids-release 8.2B4.3348P3
+
+USAGE
+	exit;
+}
+
+1;
+__END__
+
+=head1 NAME
+
+tarver - Utility to change software version number in a .tar.gz file
+
+=head1 SYNOPSIS
+
+  tarver [-hl] [TARFILE] [FILEPATH] [VERSION]
+
+=head1 ABSTRACT
+
+Utility to change software version number in a .tar.gz file.
+
+=head1 DESCRIPTION
+
+  tarver -h
+    Show help
+
+  tarver [TARFILE]
+    List all files in TARFILE
+
+  tarver [TARFILE] [FILEPATH]
+    Show content of FILEPATH in TARFILE
+
+  tarver -l [TARFILE] [FILEPATH]
+    List all files in TARFILE, whose filepath is starting with FILEPATH
+
+  tarver -t [TARFILE] [FILEPATH] [VERSION]
+    Test and show whether replace is ok
+
+  tarver -s [TARFILE] [FILEPATH] [VERSION]
+    Change first line in FILEPATH, 'number.chars.chars[CRLF]' -> VERSION
+
+=head1 EXAMPLES
+
+  tarver data.tgz
+  tarver data.tgz etc/redhat-release
+  tarver data.tgz etc/kids-release
+  tarver -l data.tgz etc/
+  tarver -t data.tgz etc/redhat-release 8.2B4.3348P3
+  tarver -t data.tgz etc/kids-release 8.2B4.3348P3
+  tarver -s data.tgz etc/redhat-release 8.2B4.3348P3
+  tarver -s data.tgz etc/kids-release 8.2B4.3348P3
+
+=head1 BUGS, REQUESTS, COMMENTS
+
+Please report any requests, suggestions or bugs via
+http://rt.cpan.org/NoAuth/ReportBug.html?Queue=tarver
+
+=head1 AUTHOR
+
+Qing-Jie Zhou E<lt>qjzhou@hotmail.comE<gt>
+
+=cut

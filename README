@@ -1,0 +1,62 @@
+tarver version 1.00
+========================
+
+Utility to change software version number in a .tar.gz file
+
+INSTALLATION
+
+To install this module type the following:
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+DEPENDENCIES
+
+This script requires these other modules and libraries:
+
+    Getopt::Std
+    Archive::Tar
+
+SYNOPSIS
+    tarver [-hl] [TARFILE] [FILEPATH] [VERSION]
+
+ABSTRACT
+    Utility to change software version number in a .tar.gz file.
+
+DESCRIPTION
+  tarver -h
+    Show help
+
+  tarver [TARFILE]
+    List all files in TARFILE
+
+  tarver [TARFILE] [FILEPATH]
+    Show content of FILEPATH in TARFILE
+
+  tarver -l [TARFILE] [FILEPATH]
+    List all files in TARFILE, whose filepath is starting with FILEPATH
+
+  tarver -t [TARFILE] [FILEPATH] [VERSION]
+    Test and show whether replace is ok
+
+  tarver -s [TARFILE] [FILEPATH] [VERSION]
+    Change first line in FILEPATH, 'number.chars.chars[CRLF]' -> VERSION
+
+EXAMPLES
+  tarver data.tgz
+  tarver data.tgz etc/redhat-release
+  tarver data.tgz etc/kids-release
+  tarver -l data.tgz etc/
+  tarver -t data.tgz etc/redhat-release 8.2B4.3348P3
+  tarver -t data.tgz etc/kids-release 8.2B4.3348P3
+  tarver -s data.tgz etc/redhat-release 8.2B4.3348P3
+  tarver -s data.tgz etc/kids-release 8.2B4.3348P3
+
+BUGS, REQUESTS, COMMENTS
+    Please report any requests, suggestions or bugs via
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=tarver
+
+AUTHOR
+    Qing-Jie Zhou, qjzhou@hotmail.com
