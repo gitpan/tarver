@@ -1,4 +1,7 @@
 Revision history for Perl script tarver.
 
+1.01    2004.03.08 23:55 Qing-Jie Zhou
+	- use t/tarver.t instead of test.pl
+
 1.00    2004.03.08 22:15 Qing-Jie Zhou
 	- original version

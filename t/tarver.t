@@ -16,11 +16,11 @@ t("tarver -s testtmp/data.tgz etc/redhat-release 8.2B4.3348P3");
 t("tarver -s testtmp/data.tgz etc/kids-release 8.2B4.3348P3");
 &clear_testenv;
 
-sub t {	is( system( $^X . " " . $_[0] ), 0, $_[0] ); }
+sub t {	my $r = system( $^X . " " . $_[0] ); print "\n"; is( $r, 0, $_[0] ); }
 
 sub make_testenv {
 	mkdir "testtmp";
-	copy("testcase/data.tgz", "testtmp/data.tgz");
+	copy("t/data.tgz", "testtmp/data.tgz");
 	ok(
 		-d "testtmp" &&
 		-f "testtmp/data.tgz", "Make testtmp" );
@@ -36,6 +36,3 @@ sub clear_testenv {
 	}
 	ok( not( -d "testtmp"), "clear testtmp" );
 }
-
-1;
-__END__;

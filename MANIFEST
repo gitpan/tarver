@@ -3,6 +3,6 @@ Makefile.PL             Generate Makefile
 MANIFEST                This list of files
 META.yml                Module meta-data
 README                  Readme
-test.pl                 Test runner
-testcase/data.tgz       Test case to provide tar files
+t/data.tgz              Test case to provide tar files
+t/tarver.t              Test programm
 tarver                  The script to change software version number in a .tar.gz file
